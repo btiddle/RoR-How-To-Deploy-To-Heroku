@@ -1,0 +1,131 @@
+=====================================================
+Title:    140901-trey-HowToDeployToHeroku
+App Name: heroku-app
+Task:     RoR How To Deploy To Heroku
+=====================================================
+
+===============
+Introduction
+===============
+Heroku: Platform as a service!
+
+That means Heroku is a piece of software that we can use that ultimately
+ends up hosting ours apps on their hardware; it is a complete package.
+
+Much easier to configure than a real cloud server.
+
+Scales nicely, but not one-size-fits-all.
+
+Heroku is great for frameworks because it can auto detect them!
+
+Reference
+- Gambling with Secrets: Part 7/8 (Diffie-Hellman Key Exchange)
+- http://www.youtube.com/watch?v=6NcDVERzMGw
+
+===============
+Heroku Setup
+===============
+- Create an account at https://www.heroku.com/
+  - User name is email address
+  - Email will be sent to verify email address
+  - Enter password to complete account creation
+  - Download and install Heroku Toolbelt
+  - Generate ssh key
+    cd <home-dir>/.ssh
+    ssh-keygen -t rsa -C "your_email@example.com"
+  - Upload ssh keys to Heruko
+    heroku keys
+
+  - Optional
+    - Clear ssh keys on Heroku
+      heroku keys:clear
+    - Add keys back in 
+      heroku keys:add
+
+===============
+Create Project
+===============
+rails new heroku-app
+cd heroku-app
+rails g scaffold Note completed:boolean desc:string
+rake db:migrate
+
+===============
+Install the pg (Postgres SQL) gem
+===============
+http://stackoverflow.com/questions/11439207/rails-error-installing-pg-gem
+- Make sure you have Xcode installed (you can get it from the app store)
+- Install Homebrew at http://brew.sh/
+  ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
+- Install postgresql
+  brew install postgresql
+- Install pg gem
+  env ARCHFLAGS="-arch x86_64" gem install pg
+
+===============
+Edit Gemfile
+===============
+<<<<<<< ORIGINAL
+# Use sqlite3 as the database for Active Record
+gem 'sqlite3'
+=======
+# Here are the gems for the production environment
+group :production do
+    # This means in the producion environment, use postgress as you DB
+    gem 'pg'
+end
+
+# Makes the production environment run without the dependencies from
+# your development environment
+gem 'thin'
+
+# Here are the gems for devlopment and test
+group :development, :test do
+    # Use sqlite3 as the database for Active Record
+    gem 'sqlite3'
+end
+>>>>>>> CHANGES
+bundle install
+
+===============
+Verify Server Can Run
+===============
+rails server
+http://localhost:3000/notes
+stop server
+
+===============
+Edit config env production (/config/environments/production.rb)
+===============
+<<<<<<< ORIGINAL
+# Do not fallback to assets pipeline if a precompiled asset is missed.
+  config.assets.compile = false
+=======
+# Do not fallback to assets pipeline if a precompiled asset is missed.
+  config.assets.compile = true
+>>>>>>> CHANGES
+
+===============
+Deploy to Heroku
+===============
+git init
+git add .
+git commit -m "Initial commit"
+heroku login
+heroku create ror-notes-app    # give a name or if blank will assing one
+git push heroku master         # http://ror-notes-app.herokuapp.com/
+
+===============
+Check Deployment From Command Line
+===============
+heroku run rake db:migrate
+heroku run console
+Note.all
+Note.new
+exit
+
+===============
+Run from command line
+===============
+heroku open
+And play with app's functionality
